@@ -25,20 +25,103 @@ function isWeekend(date: Date): boolean {
   return d === 0 || d === 6
 }
 
-/** Simplified: no real holiday list; could add one. */
-function isHoliday(_date: Date): boolean {
+/**
+ * Easter Sunday for a given year (Gregorian calendar).
+ * Uses the Anonymous Gregorian algorithm; variable names (a–m) follow the standard formulation.
+ */
+function getEasterSunday(year: number): Date {
+  const a = year % 19
+  const b = Math.floor(year / 100)
+  const c = year % 100
+  const d = Math.floor(b / 4)
+  const e = b % 4
+  const f = Math.floor((b + 8) / 25)
+  const g = Math.floor((b - f + 1) / 3)
+  const h = (19 * a + b - d - g + 15) % 30
+  const i = Math.floor(c / 4)
+  const k = c % 4
+  const l = (32 + 2 * e + 2 * i - h - k) % 7
+  const m = Math.floor((a + 11 * h + 22 * l) / 451)
+  const month = Math.floor((h + l - 7 * m + 114) / 31) // 3 = March, 4 = April
+  const day = ((h + l - 7 * m + 114) % 31) + 1
+  return new Date(year, month - 1, day)
+}
+
+/** Maximum toll per day (SEK). */
+const MAX_DAILY_FEE_SEK = 60
+
+/** Swedish public holidays (red days). */
+export function isHoliday(date: Date): boolean {
+  const y = date.getFullYear()
+  const m = date.getMonth()
+  const d = date.getDate()
+
+  // Fixed dates: (month 0-indexed, day 1-indexed)
+  if (m === 0 && d === 1) return true   // 1 Jan – New Year's Day
+  if (m === 0 && d === 6) return true   // 6 Jan – Epiphany
+  if (m === 4 && d === 1) return true   // 1 May – May Day
+  if (m === 5 && d === 6) return true   // 6 Jun – Sweden's National Day
+  if (m === 5 && d === 20) return true  // 20 Jun – Midsummer Day
+  if (m === 10 && d === 1) return true  // 1 Nov – All Saints' Day
+  if (m === 11 && d === 25) return true // 25 Dec – Christmas Day
+  if (m === 11 && d === 26) return true // 26 Dec – St. Stephen's Day (Boxing Day)
+
+  // Easter-based (Good Friday, Easter Eve, Easter Sunday, Easter Monday, Ascension Day)
+  const easter = getEasterSunday(y)
+  const goodFriday = new Date(easter)
+  goodFriday.setDate(easter.getDate() - 2)
+  const easterEve = new Date(easter)
+  easterEve.setDate(easter.getDate() - 1)
+  const easterMonday = new Date(easter)
+  easterMonday.setDate(easter.getDate() + 1)
+  const ascension = new Date(easter)
+  ascension.setDate(easter.getDate() + 39)
+
+  if (isSameDay(date, goodFriday)) return true
+  if (isSameDay(date, easterEve)) return true
+  if (isSameDay(date, easter)) return true
+  if (isSameDay(date, easterMonday)) return true
+  if (isSameDay(date, ascension)) return true
+
   return false
 }
 
+/**
+ * Fee schedule: (hour, minute range start, minute range end, fee SEK).
+ * Minutes are inclusive. Only chargeable hours are listed; all other times return 0.
+ */
+const FEE_SCHEDULE: ReadonlyArray<{ hour: number; minStart: number; minEnd: number; feeSek: number }> = [
+  { hour: 6, minStart: 0, minEnd: 29, feeSek: 8 },
+  { hour: 6, minStart: 30, minEnd: 59, feeSek: 13 },
+  { hour: 7, minStart: 0, minEnd: 59, feeSek: 18 },
+  { hour: 8, minStart: 0, minEnd: 29, feeSek: 13 },
+  { hour: 8, minStart: 30, minEnd: 59, feeSek: 8 },
+  { hour: 9, minStart: 30, minEnd: 59, feeSek: 8 },
+  { hour: 10, minStart: 30, minEnd: 59, feeSek: 8 },
+  { hour: 11, minStart: 30, minEnd: 59, feeSek: 8 },
+  { hour: 12, minStart: 30, minEnd: 59, feeSek: 8 },
+  { hour: 13, minStart: 30, minEnd: 59, feeSek: 8 },
+  { hour: 14, minStart: 30, minEnd: 59, feeSek: 8 },
+  { hour: 15, minStart: 0, minEnd: 29, feeSek: 13 },
+  { hour: 15, minStart: 30, minEnd: 59, feeSek: 18 },
+  { hour: 16, minStart: 0, minEnd: 59, feeSek: 18 },
+  { hour: 17, minStart: 0, minEnd: 59, feeSek: 13 },
+  { hour: 18, minStart: 0, minEnd: 29, feeSek: 8 },
+]
+
+/** Returns the toll fee (SEK) for the given date/time, or 0 if outside chargeable hours. */
 function getHourFeeSek(date: Date): number {
-  const h = date.getHours()
-  const m = date.getMinutes()
-  const totalMinutes = h * 60 + m
-  // Rush hours: 6–9 and 15–17 (example) => 18 SEK; else 8 SEK
-  const isRush =
-    (totalMinutes >= 6 * 60 && totalMinutes < 9 * 60) ||
-    (totalMinutes >= 15 * 60 && totalMinutes < 17 * 60)
-  return isRush ? 18 : 8
+  const hour = date.getHours()
+  const minute = date.getMinutes()
+
+  const match = FEE_SCHEDULE.find(
+    (slot) => slot.hour === hour && minute >= slot.minStart && minute <= slot.minEnd,
+  )
+  console.log('1 match', match)
+  console.log('1 hour', hour)
+  console.log('1 minute', minute)
+  console.log('1 FEE_SCHEDULE', FEE_SCHEDULE)
+  return match?.feeSek ?? 0
 }
 
 /** Same calendar day (date only). */
@@ -76,7 +159,7 @@ export function computeEffectiveFeeForDay(
     byHour.set(key, Math.max(current, p.feeSek))
   }
   const sum = [...byHour.values()].reduce((a, b) => a + b, 0)
-  return Math.min(sum, 60)
+  return Math.min(sum, MAX_DAILY_FEE_SEK)
 }
 
 /** Mock: get fee for a given date/time and vehicle. */
@@ -107,40 +190,43 @@ const getApiPassages = () => {
   return queryClient.getQueryData<TollPassage[]>(getQueryKey(apiToll.getPassages.queryKey))
 }
 
+/**
+ * Fee for this passage respecting the daily cap: if adding this fee would exceed
+ * the cap, only the remaining amount up to the cap is charged.
+ */
+function capFeeToDailyMaximum(feeSek: number, dayTotalSoFarSek: number): number {
+  const roomLeft = MAX_DAILY_FEE_SEK - dayTotalSoFarSek
+  return Math.min(feeSek, Math.max(0, roomLeft))
+}
+
 /** Mock: add a passage and return it with computed fee (stored in memory). */
 export function mockAddPassage(
   timestamp: string,
   vehicleType: VehicleType,
 ): Promise<{ passage: TollPassage; dayTotalSek: number }> {
-  const currentPassages = getApiPassages()
-  console.log('1 currentPassages', currentPassages)
-  const { feeSek } = mockGetFeeForDateTime(timestamp, vehicleType);
-  const dayTotalSek = computeEffectiveFeeForDay(
-    currentPassages ?? [],
-    new Date(timestamp),
-  )
+  const currentPassages = getApiPassages() ?? []
+  const { feeSek } = mockGetFeeForDateTime(timestamp, vehicleType)
+  const dayTotalSek = computeEffectiveFeeForDay(currentPassages, new Date(timestamp))
 
-  console.log('1 dayTotalSek', dayTotalSek)
-  console.log('1 feeSek', feeSek)
-
-  const givenFee = feeSek + dayTotalSek > 60 ? Math.max(0, 60 - dayTotalSek) : feeSek;
-
-  console.log('1 givenFee', givenFee)
+  const passageFeeSek = capFeeToDailyMaximum(feeSek, dayTotalSek)
 
   const passage: TollPassage = {
     id: String(nextId++),
     timestamp,
     vehicleType,
-    feeSek: givenFee,
+    feeSek: passageFeeSek,
   }
-  mockPassages.push(passage);
-  setApiPassagesToHighestWithinHour(passage);
+  mockPassages.push(passage)
+  setApiPassagesToHighestWithinHour(passage)
 
   return Promise.resolve({ passage, dayTotalSek })
 }
 
-/** For the given passage's vehicle type and hour, keep only the highest fee; set others to 0. */
-const setApiPassagesToHighestWithinHour = (passage: TollPassage) => {
+/**
+ * Within the same calendar hour and vehicle type, only the passage with the
+ * highest fee is charged; all others in that hour/type are set to 0.
+ */
+function setApiPassagesToHighestWithinHour(passage: TollPassage): void {
   const hourKey = getDayHourKey(new Date(passage.timestamp))
   const sameHourSameType = mockPassages.filter(
     (p) =>
@@ -148,9 +234,10 @@ const setApiPassagesToHighestWithinHour = (passage: TollPassage) => {
       getDayHourKey(new Date(p.timestamp)) === hourKey,
   )
   const maxFee = Math.max(...sameHourSameType.map((p) => p.feeSek))
-  const winner = sameHourSameType.find((p) => p.feeSek === maxFee)!
+  const passageWithMaxFee = sameHourSameType.find((p) => p.feeSek === maxFee)!
+
   for (const p of sameHourSameType) {
-    p.feeSek = p === winner ? maxFee : 0
+    p.feeSek = p === passageWithMaxFee ? maxFee : 0
   }
 }
 
@@ -159,7 +246,7 @@ export function mockGetFeeRules(): Promise<FeeRulesSummary> {
   return Promise.resolve({
     minFeeSek: 8,
     maxFeeSek: 18,
-    maxPerDaySek: 60,
+    maxPerDaySek: MAX_DAILY_FEE_SEK,
     freeVehicleTypes: [...FEE_FREE_VEHICLES],
     freeDays: 'weekends_and_holidays',
     chargeOncePerHour: true,

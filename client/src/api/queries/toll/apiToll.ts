@@ -59,7 +59,7 @@ export const apiToll: ApiToll = {
         mockAddPassage(data.timestamp, data.vehicleType).then(
           ({ passage, dayTotalSek }) => ({ passage, dayTotalSek }),
         ),
-      onSuccess: (data) => {
+      onSuccess: (data, variables) => {
         appendToQueryOnSuccess(
           getQueryKey(TOLL_QUERY_KEYS.PASSAGES),
           data.passage,
@@ -68,6 +68,9 @@ export const apiToll: ApiToll = {
         )
         queryClient.invalidateQueries({
           queryKey: getQueryKey(TOLL_QUERY_KEYS.PASSAGES),
+        })
+        queryClient.invalidateQueries({
+          queryKey: getQueryKey(TOLL_QUERY_KEYS.SEK_TODAY, variables.timestamp),
         })
       },
     }),
