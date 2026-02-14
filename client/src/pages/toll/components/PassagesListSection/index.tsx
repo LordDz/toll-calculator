@@ -9,8 +9,8 @@ export const PassagesListSection = () => {
 
 
   return (
-    <section className="bg-toll-section rounded-xl p-6">
-      <TxtSectionTitle>Your toll passages</TxtSectionTitle>
+    <div className="bg-toll-section rounded-xl p-6">
+      <TxtSectionTitle>Toll passages</TxtSectionTitle>
       <QueryWrapper
         query={passagesQuery}
         loadingMessage="Loading…"
@@ -20,6 +20,6 @@ export const PassagesListSection = () => {
       >
         {(data) => <PassagesTable passages={data} />}
       </QueryWrapper>
-    </section>
+    </div>
   )
 }

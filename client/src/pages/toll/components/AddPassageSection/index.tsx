@@ -1,11 +1,10 @@
 import type { VehicleType } from '@/api/queries/toll'
 import { apiToll } from '@/api/queries/toll'
 import { TxtSectionTitle } from '@/components/text/Header'
-import { TxtParagraph } from '@/components/text/Paragraph'
-import { formatDateTime } from '@/utils/date/formatDateTime'
 import { toDatetimeLocal } from '@/utils/date/toDateTimeLocal'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
+import { PassagesListSection } from '../PassagesListSection'
 import { FeeCost } from './FeeCost'
 import { PassageForm } from './PassageForm'
 
@@ -63,12 +62,8 @@ const feeCheckQuery = useQuery({
         </QueryWrapper>
       )} */}
       <FeeCost data={feeCheckQuery.data} />
-      {addPassageMutation.isSuccess && addPassageMutation.data && (
-        <TxtParagraph className="mt-3 text-sm text-text-primary">
-          Added: {addPassageMutation.data.passage.feeSek} SEK at{' '}
-          {formatDateTime(addPassageMutation.data.passage.timestamp)}
-        </TxtParagraph>
-      )}
+      <PassagesListSection />
+ 
     </section>
   )
 }
