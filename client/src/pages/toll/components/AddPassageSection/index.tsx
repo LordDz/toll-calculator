@@ -1,8 +1,5 @@
 import type { VehicleType } from '@/api/queries/toll'
-import { apiToll, TOLL_QUERY_KEYS } from '@/api/queries/toll'
-import { getQueryKey } from '@/api/queries/util/queryKey'
-import { queryClient } from '@/api/queryClient/queryClient'
-import { QueryWrapper } from '@/components/QueryWrapper'
+import { apiToll } from '@/api/queries/toll'
 import { TxtSectionTitle } from '@/components/text/Header'
 import { TxtParagraph } from '@/components/text/Paragraph'
 import { formatDateTime } from '@/utils/date/formatDateTime'
@@ -18,14 +15,9 @@ export const AddPassageSection = () => {
   )
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleType>('Car')
 
-  const addPassageMutation = useMutation({
-    ...apiToll.postPassage.post(),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: getQueryKey(TOLL_QUERY_KEYS.PASSAGES),
-      })
-    },
-  })
+  const addPassageMutation = useMutation(
+    apiToll.postPassage.post(),
+  )
 
   const handleAddPassage = () => {
     const timestamp = new Date(selectedTime).toISOString()
@@ -54,7 +46,7 @@ const feeCheckQuery = useQuery({
 })
 
   return (
-    <section className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
+    <section className="bg-toll-section rounded-xl p-6">
       <TxtSectionTitle>Add toll passage</TxtSectionTitle>
       <PassageForm
         selectedTime={selectedTime}
@@ -65,13 +57,14 @@ const feeCheckQuery = useQuery({
         isPending={addPassageMutation.isPending}
       />
 
-      {feeCheckParams && (
-        <QueryWrapper query={feeCheckQuery}>
-          {(data) => <FeeCost data={data} />}
+      {/* {feeCheckParams && (
+        <QueryWrapper query={feeCheckQuery} messageClassName="text-text-secondary">
+          {(_data) => null}
         </QueryWrapper>
-      )}
+      )} */}
+      <FeeCost data={feeCheckQuery.data} />
       {addPassageMutation.isSuccess && addPassageMutation.data && (
-        <TxtParagraph className="mt-3 text-sm text-cyan-400">
+        <TxtParagraph className="mt-3 text-sm text-text-primary">
           Added: {addPassageMutation.data.passage.feeSek} SEK at{' '}
           {formatDateTime(addPassageMutation.data.passage.timestamp)}
         </TxtParagraph>

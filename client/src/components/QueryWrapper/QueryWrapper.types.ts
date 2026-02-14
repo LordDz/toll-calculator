@@ -8,5 +8,7 @@ export type QueryWrapperProps<TData> = {
   noDataMessage?: React.ReactNode
   /** Message or element shown on error. Default: "Error: {error.message}" */
   errorMessage?: (error: Error) => React.ReactNode
+  /** Optional class for loading / no-data / error messages (e.g. light section text) */
+  messageClassName?: string
   children: (data: TData) => React.ReactNode
 }

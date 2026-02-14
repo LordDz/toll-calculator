@@ -5,7 +5,7 @@ export const Logo = () => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 286.69 514.54"
-      className="h-10 w-auto ml-20"
+      className="h-10 w-auto"
       fill="currentColor"
       aria-hidden
     >

@@ -5,6 +5,19 @@
   --sand-rgb: 252, 248, 240;
   --stone-rgb: 226, 226, 222;
   --sand: rgb(var(--sand-rgb));
+
+  /* Text and UI colors (single source of truth; use text-text-primary, bg-button, etc.) */
+  --toll-text-primary: #2d2d2d;
+  --toll-text-secondary: #7b7b7b;
+  --toll-text-on-button: #ffffff;
+  --toll-button: #698b6c;
+}
+
+@theme {
+  --color-text-primary: var(--toll-text-primary);
+  --color-text-secondary: var(--toll-text-secondary);
+  --color-text-on-button: var(--toll-text-on-button);
+  --color-button: var(--toll-button);
 }
 
 @utility bg-toll-page {
@@ -12,6 +25,11 @@
     radial-gradient(circle at 12% 14%, rgba(var(--forest-rgb), 0.06), transparent 32%),
     radial-gradient(circle at 82% 12%, rgba(var(--stone-rgb), 0.4), transparent 30%),
     var(--sand);
+}
+
+@utility bg-toll-section {
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(var(--stone-rgb), 0.5);
 }
 
 body {

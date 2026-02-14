@@ -8,7 +8,7 @@ import {
 export const TollPage = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      <TxtParagraph className="text-gray-400 mb-8">
+      <TxtParagraph className="text-text-secondary mb-8">
         Check fees, view passages, and add entries. Mock backend for demo.
       </TxtParagraph>
 

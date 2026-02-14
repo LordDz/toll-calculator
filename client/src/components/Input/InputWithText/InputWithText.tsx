@@ -6,10 +6,11 @@ const inputClassName =
 export const InputWithText = ({
   label,
   className,
+  labelClassName = 'text-sm text-gray-400',
   ...inputProps
 }: InputWithTextProps) => (
   <label className="flex flex-col gap-1">
-    <span className="text-sm text-gray-400">{label}</span>
+    <span className={labelClassName}>{label}</span>
     <input
       {...inputProps}
       className={className ?? inputClassName}

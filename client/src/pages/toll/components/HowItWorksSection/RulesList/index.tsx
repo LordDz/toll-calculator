@@ -1,19 +1,15 @@
-import type { FeeRulesSummary } from '@/api/queries/toll/apiToll.types'
-
-type RulesListProps = {
-  rules: FeeRulesSummary
-}
+import type { RulesListProps } from './index.types'
 
 export const RulesList = ({ rules }: RulesListProps) => (
-  <ul className="space-y-2 text-gray-300">
+  <ul className="space-y-2 text-text-primary">
     <li>
-      Fee between <strong className="text-white">{rules.minFeeSek}</strong> and{' '}
-      <strong className="text-white">{rules.maxFeeSek} SEK</strong> depending on
+      Fee between <strong>{rules.minFeeSek}</strong> and{' '}
+      <strong>{rules.maxFeeSek} SEK</strong> depending on
       time of day.
     </li>
     <li>
       Maximum{' '}
-      <strong className="text-white">{rules.maxPerDaySek} SEK</strong> per day.
+      <strong>{rules.maxPerDaySek} SEK</strong> per day.
     </li>
     <li>
       Charged at most once per hour; highest fee applies if multiple passages in
@@ -22,7 +18,7 @@ export const RulesList = ({ rules }: RulesListProps) => (
     <li>Fee-free: weekends and holidays.</li>
     <li>
       Fee-free vehicle types:{' '}
-      <span className="text-cyan-300">
+      <span className="text-cyan-700">
         {rules.freeVehicleTypes.join(', ')}
       </span>
     </li>

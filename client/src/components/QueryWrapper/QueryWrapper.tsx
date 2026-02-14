@@ -1,24 +1,29 @@
 import { TxtParagraph } from '@/components/text/Paragraph'
 import type { QueryWrapperProps } from './QueryWrapper.types'
 
+const defaultMessageClass = 'text-gray-400'
+const defaultErrorClass = 'text-red-400'
+
 export function QueryWrapper<TData>({
   query,
   loadingMessage = 'Loading…',
   noDataMessage = 'No data.',
   errorMessage = (error) => `Error: ${error?.message ?? 'Unknown error'}`,
+  messageClassName = defaultMessageClass,
   children,
 }: Readonly<QueryWrapperProps<TData>>) {
   if (query.isLoading) {
     return (
-      <TxtParagraph className="text-gray-400">
+      <TxtParagraph className={messageClassName}>
         {loadingMessage}
       </TxtParagraph>
     )
   }
 
   if (query.isError && query.error) {
+    const errorClass = messageClassName === defaultMessageClass ? defaultErrorClass : 'text-red-600'
     return (
-      <TxtParagraph className="text-red-400">
+      <TxtParagraph className={errorClass}>
         {errorMessage(query.error)}
       </TxtParagraph>
     )
@@ -26,7 +31,7 @@ export function QueryWrapper<TData>({
 
   if (query.data === undefined) {
     return (
-      <TxtParagraph className="text-gray-500">
+      <TxtParagraph className={messageClassName}>
         {noDataMessage}
       </TxtParagraph>
     )
@@ -34,7 +39,7 @@ export function QueryWrapper<TData>({
 
   if (Array.isArray(query.data) && query.data.length === 0) {
     return (
-      <TxtParagraph className="text-gray-500">
+      <TxtParagraph className={messageClassName}>
         {noDataMessage}
       </TxtParagraph>
     )
