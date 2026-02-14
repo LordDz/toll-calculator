@@ -1,7 +1,7 @@
 import type { VehicleType } from '@/api/queries/toll'
 import { apiToll } from '@/api/queries/toll'
 import { isHoliday } from '@/api/queries/toll/mockTollData'
-import { TxtSectionTitle } from '@/components/text/Header'
+import { TxtSectionTitle } from '@/components/text/MenuHeader'
 import { toDatetimeLocal } from '@/utils/date/toDateTimeLocal'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'

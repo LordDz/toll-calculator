@@ -1,6 +1,6 @@
 import { apiToll } from '@/api/queries/toll'
 import { QueryWrapper } from '@/components/QueryWrapper/QueryWrapper'
-import { TxtSectionTitle } from '@/components/text/Header'
+import { TxtSectionTitle } from '@/components/text/MenuHeader'
 import { useQuery } from '@tanstack/react-query'
 import { RulesList } from './RulesList'
 

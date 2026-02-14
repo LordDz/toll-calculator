@@ -18,6 +18,16 @@
   --color-text-secondary: var(--toll-text-secondary);
   --color-text-on-button: var(--toll-text-on-button);
   --color-button: var(--toll-button);
+  --animate-fade-in: fade-in 0.35s ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @utility bg-toll-page {

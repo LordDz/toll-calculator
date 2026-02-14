@@ -35,7 +35,10 @@ export const Header = () => {
         >
           <Menu size={24} />
         </button>
+        <div className='ml-10'>
+
           <Logo />
+        </div>
       </header>
       <MenuContent isOpen={isOpen} onClose={handleCloseMenu} />
     </>
