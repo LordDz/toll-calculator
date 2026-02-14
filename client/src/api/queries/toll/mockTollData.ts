@@ -116,11 +116,8 @@ function getHourFeeSek(date: Date): number {
 
   const match = FEE_SCHEDULE.find(
     (slot) => slot.hour === hour && minute >= slot.minStart && minute <= slot.minEnd,
-  )
-  console.log('1 match', match)
-  console.log('1 hour', hour)
-  console.log('1 minute', minute)
-  console.log('1 FEE_SCHEDULE', FEE_SCHEDULE)
+  );
+
   return match?.feeSek ?? 0
 }
 

@@ -70,12 +70,6 @@ const feeCheckQuery = useQuery({
           Day total (once/hour, max 60 SEK): <span className="font-medium text-text-primary">{qSekToday.data} SEK</span>
         </p>
       )}
-
-      {/* {feeCheckParams && (
-        <QueryWrapper query={feeCheckQuery} messageClassName="text-text-secondary">
-          {(_data) => null}
-        </QueryWrapper>
-      )} */}
       <FeeCost data={feeCheckQuery.data} />
       <PassagesListSection />
  
