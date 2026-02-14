@@ -1,1 +1,2 @@
-export { QueryWrapper } from './QueryWrapper'
+export { QueryWrapper } from './QueryWrapper';
+

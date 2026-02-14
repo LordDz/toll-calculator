@@ -2,6 +2,7 @@ import type { VehicleType } from '@/api/queries/toll'
 import { apiToll, TOLL_QUERY_KEYS } from '@/api/queries/toll'
 import { getQueryKey } from '@/api/queries/util/queryKey'
 import { queryClient } from '@/api/queryClient/queryClient'
+import { InputWithText } from '@/components/Input/InputWithText'
 import { Select } from '@/components/Input/Select'
 import { TxtSectionTitle } from '@/components/text/Header'
 import { TxtParagraph } from '@/components/text/Paragraph'
@@ -42,15 +43,12 @@ export const AddPassageSection = () => {
     <section className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
       <TxtSectionTitle>Add toll passage</TxtSectionTitle>
       <div className="flex flex-wrap gap-4 items-end">
-        <label className="flex flex-col gap-1">
-          <span className="text-sm text-gray-400">Date & time</span>
-          <input
-            type="datetime-local"
-            value={addDateTime}
-            onChange={handleAddDate}
-            className="px-3 py-2 rounded-lg bg-slate-700 border border-slate-600 text-white focus:ring-2 focus:ring-cyan-500"
-          />
-        </label>
+        <InputWithText
+          label="Date & time"
+          type="datetime-local"
+          value={addDateTime}
+          onChange={handleAddDate}
+        />
         <Select
           label="Vehicle"
           value={selectedVehicle}
