@@ -1,3 +1,6 @@
+import { queryClient } from '@/api/queryClient/queryClient'
+import { getQueryKey } from '../util/queryKey'
+import { apiToll } from './apiToll'
 import type { FeeCheckResult, FeeRulesSummary, TollPassage, VehicleType } from './apiToll.types'
 
 /** Fee-free vehicle types per requirements. */
@@ -100,24 +103,55 @@ export function mockGetPassages(): Promise<TollPassage[]> {
   return Promise.resolve([...mockPassages])
 }
 
+const getApiPassages = () => {
+  return queryClient.getQueryData<TollPassage[]>(getQueryKey(apiToll.getPassages.queryKey))
+}
+
 /** Mock: add a passage and return it with computed fee (stored in memory). */
 export function mockAddPassage(
   timestamp: string,
   vehicleType: VehicleType,
 ): Promise<{ passage: TollPassage; dayTotalSek: number }> {
-  const { feeSek } = mockGetFeeForDateTime(timestamp, vehicleType)
+  const currentPassages = getApiPassages()
+  console.log('1 currentPassages', currentPassages)
+  const { feeSek } = mockGetFeeForDateTime(timestamp, vehicleType);
+  const dayTotalSek = computeEffectiveFeeForDay(
+    currentPassages ?? [],
+    new Date(timestamp),
+  )
+
+  console.log('1 dayTotalSek', dayTotalSek)
+  console.log('1 feeSek', feeSek)
+
+  const givenFee = feeSek + dayTotalSek > 60 ? Math.max(0, 60 - dayTotalSek) : feeSek;
+
+  console.log('1 givenFee', givenFee)
+
   const passage: TollPassage = {
     id: String(nextId++),
     timestamp,
     vehicleType,
-    feeSek,
+    feeSek: givenFee,
   }
-  mockPassages.push(passage)
-  const dayTotalSek = computeEffectiveFeeForDay(
-    mockPassages,
-    new Date(timestamp),
-  )
+  mockPassages.push(passage);
+  setApiPassagesToHighestWithinHour(passage);
+
   return Promise.resolve({ passage, dayTotalSek })
+}
+
+/** For the given passage's vehicle type and hour, keep only the highest fee; set others to 0. */
+const setApiPassagesToHighestWithinHour = (passage: TollPassage) => {
+  const hourKey = getDayHourKey(new Date(passage.timestamp))
+  const sameHourSameType = mockPassages.filter(
+    (p) =>
+      p.vehicleType === passage.vehicleType &&
+      getDayHourKey(new Date(p.timestamp)) === hourKey,
+  )
+  const maxFee = Math.max(...sameHourSameType.map((p) => p.feeSek))
+  const winner = sameHourSameType.find((p) => p.feeSek === maxFee)!
+  for (const p of sameHourSameType) {
+    p.feeSek = p === winner ? maxFee : 0
+  }
 }
 
 /** Mock: get fee rules summary for UI. */
