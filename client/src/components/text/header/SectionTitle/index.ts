@@ -1,0 +1,1 @@
+export { TxtSectionTitle } from './TxtSectionTitle'

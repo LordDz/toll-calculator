@@ -1,6 +1,5 @@
 import { Link } from '@tanstack/react-router'
 
-import { useState } from 'react'
 import {
   Calculator,
   ChevronDown,
@@ -12,12 +11,23 @@ import {
   StickyNote,
   X,
 } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
-export default function Header() {
+export const Header = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [groupedExpanded, setGroupedExpanded] = useState<
     Record<string, boolean>
   >({})
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsOpen(false)
+    }
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape)
+      return () => document.removeEventListener('keydown', handleEscape)
+    }
+  }, [isOpen])
 
   return (
     <>

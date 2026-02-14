@@ -1,10 +1,12 @@
 import type { VehicleType } from '@/api/queries/toll'
 import { apiToll, TOLL_QUERY_KEYS } from '@/api/queries/toll'
 import { getQueryKey } from '@/api/queries/util/queryKey'
-import { PageTitle, SectionTitle } from '@/components/text/header'
+import { queryClient } from '@/api/queryClient/queryClient'
+import { TxtPageTitle, TxtSectionTitle } from '@/components/text/Header'
+import { TxtParagraph } from '@/components/text/Paragraph'
 import { formatDateTime } from '@/utils/date/formatDateTime'
 import { toDatetimeLocal } from '@/utils/date/toDateTimeLocal'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 
 const VEHICLE_OPTIONS: VehicleType[] = [
@@ -19,7 +21,7 @@ const VEHICLE_OPTIONS: VehicleType[] = [
 ]
 
 export const TollPage = () => {
-  const queryClient = useQueryClient()
+  // const queryClient = useQueryClient()
 
   const [checkDateTime, setCheckDateTime] = useState(() =>
     toDatetimeLocal(new Date().toISOString()),
@@ -62,15 +64,15 @@ export const TollPage = () => {
 
   return (
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <PageTitle>Toll fee calculator</PageTitle>
-        <p className="text-gray-400 mb-8">
+        <TxtPageTitle>Toll fee calculator</TxtPageTitle>
+        <TxtParagraph className="text-gray-400 mb-8">
           Check fees, view passages, and add entries. Mock backend for demo.
-        </p>
+        </TxtParagraph>
 
         <div className="grid gap-6">
           {/* Fee checker */}
           <section className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-            <SectionTitle>Is this time fee-free?</SectionTitle>
+            <TxtSectionTitle>Is this time fee-free?</TxtSectionTitle>
             <div className="flex flex-wrap gap-4 items-end">
               <label className="flex flex-col gap-1">
                 <span className="text-sm text-gray-400">Date & time</span>
@@ -122,7 +124,7 @@ export const TollPage = () => {
 
           {/* Add passage */}
           <section className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-            <SectionTitle>Add toll passage</SectionTitle>
+            <TxtSectionTitle>Add toll passage</TxtSectionTitle>
             <div className="flex flex-wrap gap-4 items-end">
               <label className="flex flex-col gap-1">
                 <span className="text-sm text-gray-400">Date & time</span>
@@ -156,23 +158,23 @@ export const TollPage = () => {
               </button>
             </div>
             {addPassageMutation.isSuccess && (
-              <p className="mt-3 text-sm text-cyan-400">
+              <TxtParagraph className="mt-3 text-sm text-cyan-400">
                 Added: {addPassageMutation.data.passage.feeSek} SEK at{' '}
                 {formatDateTime(addPassageMutation.data.passage.timestamp)}
-              </p>
+              </TxtParagraph>
             )}
           </section>
 
           {/* Passages list */}
           <section className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-            <SectionTitle>Your toll passages</SectionTitle>
+            <TxtSectionTitle>Your toll passages</TxtSectionTitle>
             {passagesQuery.isLoading && (
-              <p className="text-gray-400">Loading…</p>
+              <TxtParagraph className="text-gray-400">Loading…</TxtParagraph>
             )}
             {passagesQuery.isError && (
-              <p className="text-red-400">
+              <TxtParagraph className="text-red-400">
                 Error: {passagesQuery.error?.message}
-              </p>
+              </TxtParagraph>
             )}
             {passagesQuery.data && (
               <div className="overflow-x-auto">
@@ -206,7 +208,7 @@ export const TollPage = () => {
                   </tbody>
                 </table>
                 {passagesQuery.data.length === 0 && (
-                  <p className="text-gray-500 py-4">No passages yet.</p>
+                  <TxtParagraph className="text-gray-500 py-4">No passages yet.</TxtParagraph>
                 )}
               </div>
             )}
@@ -214,9 +216,9 @@ export const TollPage = () => {
 
           {/* How it works */}
           <section className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-            <SectionTitle>How the toll system works</SectionTitle>
+            <TxtSectionTitle>How the toll system works</TxtSectionTitle>
             {rulesQuery.isLoading && (
-              <p className="text-gray-400">Loading rules…</p>
+              <TxtParagraph className="text-gray-400">Loading rules…</TxtParagraph>
             )}
             {rulesQuery.data && (
               <ul className="space-y-2 text-gray-300">

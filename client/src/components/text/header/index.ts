@@ -1,2 +1,2 @@
-export { PageTitle } from './PageTitle'
-export { SectionTitle } from './SectionTitle'
+export { TxtPageTitle } from './pageTitle'
+export { TxtSectionTitle } from './sectionTitle'
