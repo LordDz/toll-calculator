@@ -2,7 +2,6 @@ import { TxtPageTitle } from '@/components/text/Header'
 import { TxtParagraph } from '@/components/text/Paragraph'
 import {
   AddPassageSection,
-  FeeCheckerSection,
   HowItWorksSection,
   PassagesListSection,
 } from './components'
@@ -16,7 +15,6 @@ export const TollPage = () => {
       </TxtParagraph>
 
       <div className="grid gap-6">
-        <FeeCheckerSection />
         <AddPassageSection />
         <PassagesListSection />
         <HowItWorksSection />

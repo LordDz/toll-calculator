@@ -3,17 +3,18 @@ import { apiToll, TOLL_QUERY_KEYS } from '@/api/queries/toll'
 import { getQueryKey } from '@/api/queries/util/queryKey'
 import { queryClient } from '@/api/queryClient/queryClient'
 import { InputWithText } from '@/components/Input/InputWithText'
-import { Select } from '@/components/Input/Select'
+import { QueryWrapper } from '@/components/QueryWrapper'
 import { TxtSectionTitle } from '@/components/text/Header'
 import { TxtParagraph } from '@/components/text/Paragraph'
 import { formatDateTime } from '@/utils/date/formatDateTime'
 import { toDatetimeLocal } from '@/utils/date/toDateTimeLocal'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { VEHICLE_OPTIONS } from '../constants'
+import { FeeCost } from './FeeCost'
+import { VehicleList } from './VehicleList'
 
 export const AddPassageSection = () => {
-  const [addDateTime, setAddDateTime] = useState(() =>
+  const [selectedTime, setSelectedTime] = useState(() =>
     toDatetimeLocal(new Date().toISOString()),
   )
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleType>('Car')
@@ -28,16 +29,30 @@ export const AddPassageSection = () => {
   })
 
   const handleAddPassage = () => {
-    const timestamp = new Date(addDateTime).toISOString()
+    const timestamp = new Date(selectedTime).toISOString()
     addPassageMutation.mutate({ timestamp, vehicleType: selectedVehicle })
   }
 
   const handleAddDate = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAddDateTime(e.target.value)
+    setSelectedTime(e.target.value)
   }
   const handleAddVehicle = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedVehicle(e.target.value as VehicleType)
   }
+  const feeCheckParams =
+  selectedTime && selectedVehicle
+    ? {
+        dateTime: new Date(selectedTime).toISOString(),
+        vehicleType: selectedVehicle,
+      }
+    : null;
+    
+const feeCheckQuery = useQuery({
+  ...apiToll.getFeeCheck.getByData(
+    feeCheckParams ?? { dateTime: '', vehicleType: 'Car' },
+    !!feeCheckParams,
+  ),
+})
 
   return (
     <section className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
@@ -46,14 +61,14 @@ export const AddPassageSection = () => {
         <InputWithText
           label="Date & time"
           type="datetime-local"
-          value={addDateTime}
+          value={selectedTime}
           onChange={handleAddDate}
         />
-        <Select
+        <VehicleList
           label="Vehicle"
           value={selectedVehicle}
           onChange={handleAddVehicle}
-          options={VEHICLE_OPTIONS}
+          selectedDateTime={selectedTime}
         />
         <button
           onClick={handleAddPassage}
@@ -63,6 +78,12 @@ export const AddPassageSection = () => {
           {addPassageMutation.isPending ? 'Adding…' : 'Add passage'}
         </button>
       </div>
+
+      {feeCheckParams && (
+        <QueryWrapper query={feeCheckQuery}>
+          {(data) => <FeeCost data={data} />}
+        </QueryWrapper>
+      )}
       {addPassageMutation.isSuccess && addPassageMutation.data && (
         <TxtParagraph className="mt-3 text-sm text-cyan-400">
           Added: {addPassageMutation.data.passage.feeSek} SEK at{' '}
