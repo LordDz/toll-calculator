@@ -1,5 +1,19 @@
 @import "tailwindcss";
 
+:root {
+  --forest-rgb: 89, 110, 92;
+  --sand-rgb: 252, 248, 240;
+  --stone-rgb: 226, 226, 222;
+  --sand: rgb(var(--sand-rgb));
+}
+
+@utility bg-toll-page {
+  background:
+    radial-gradient(circle at 12% 14%, rgba(var(--forest-rgb), 0.06), transparent 32%),
+    radial-gradient(circle at 82% 12%, rgba(var(--stone-rgb), 0.4), transparent 30%),
+    var(--sand);
+}
+
 body {
   @apply m-0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",

@@ -1,0 +1,50 @@
+import { Link } from '@tanstack/react-router'
+import { Menu } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { MenuContent } from './Menu/Content'
+
+export const Header = () => {
+  const [isOpen, setIsOpen] = useState(false)
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsOpen(false)
+    }
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape)
+      return () => document.removeEventListener('keydown', handleEscape)
+    }
+  }, [isOpen])
+
+  return (
+    <>
+      <header className="p-4 flex items-center bg-gray-800 text-white shadow-lg">
+        <button
+          onClick={() => setIsOpen(true)}
+          className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+          aria-label="Open menu"
+        >
+          <Menu size={24} />
+        </button>
+        <h1 className="ml-4 text-xl font-semibold">
+          <Link to="/" className="flex items-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 286.69 514.54"
+              className="h-10 w-auto"
+              fill="currentColor"
+              aria-hidden
+            >
+              <g>
+                <path d="M204.17,399.31c-11.41,37.23-30.87,65.41-58.37,84.53-27.51,19.12-63.74,29.35-108.69,30.7l-10.57-67.93c25.83-2.69,45.04-7.38,57.62-14.09,12.58-6.72,22.39-17.61,29.44-32.71h-34.22L2.89,131.11h105.67l33.71,207.82,41.76-207.82h102.65l-82.52,268.2Z" />
+                <path d="M95.86,15.35c10.57,10.24,15.85,22.89,15.85,37.99s-5.28,27.76-15.85,37.99c-10.57,10.24-23.9,15.35-40,15.35s-29.44-5.11-40-15.35C5.28,81.1,0,68.43,0,53.34S5.28,25.58,15.85,15.35C26.42,5.12,39.75,0,55.85,0s29.44,5.12,40,15.35Z" />
+              </g>
+            </svg>
+          </Link>
+        </h1>
+      </header>
+
+      <MenuContent isOpen={isOpen} onClose={() => setIsOpen(false)} />
+    </>
+  )
+}
