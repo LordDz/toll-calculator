@@ -1,8 +1,11 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import type { VehicleType } from '@/api/queries/toll'
 import { apiToll, TOLL_QUERY_KEYS } from '@/api/queries/toll'
 import { getQueryKey } from '@/api/queries/util/queryKey'
-import type { VehicleType } from '@/api/queries/toll'
+import { PageTitle, SectionTitle } from '@/components/text/header'
+import { formatDateTime } from '@/utils/date/formatDateTime'
+import { toDatetimeLocal } from '@/utils/date/toDateTimeLocal'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
 
 const VEHICLE_OPTIONS: VehicleType[] = [
   'Car',
@@ -14,27 +17,6 @@ const VEHICLE_OPTIONS: VehicleType[] = [
   'Military',
   'Foreign',
 ]
-
-const toDatetimeLocal = (iso: string): string => {
-  try {
-    const d = new Date(iso)
-    const pad = (n: number) => String(n).padStart(2, '0')
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
-  } catch {
-    return ''
-  }
-}
-
-const formatDateTime = (iso: string): string => {
-  try {
-    return new Date(iso).toLocaleString(undefined, {
-      dateStyle: 'short',
-      timeStyle: 'short',
-    })
-  } catch {
-    return iso
-  }
-}
 
 export const TollPage = () => {
   const queryClient = useQueryClient()
@@ -79,11 +61,8 @@ export const TollPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white">
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-          Toll fee calculator
-        </h1>
+        <PageTitle>Toll fee calculator</PageTitle>
         <p className="text-gray-400 mb-8">
           Check fees, view passages, and add entries. Mock backend for demo.
         </p>
@@ -91,9 +70,7 @@ export const TollPage = () => {
         <div className="grid gap-6">
           {/* Fee checker */}
           <section className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-            <h2 className="text-xl font-semibold text-white mb-4">
-              Is this time fee-free?
-            </h2>
+            <SectionTitle>Is this time fee-free?</SectionTitle>
             <div className="flex flex-wrap gap-4 items-end">
               <label className="flex flex-col gap-1">
                 <span className="text-sm text-gray-400">Date & time</span>
@@ -145,9 +122,7 @@ export const TollPage = () => {
 
           {/* Add passage */}
           <section className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-            <h2 className="text-xl font-semibold text-white mb-4">
-              Add toll passage
-            </h2>
+            <SectionTitle>Add toll passage</SectionTitle>
             <div className="flex flex-wrap gap-4 items-end">
               <label className="flex flex-col gap-1">
                 <span className="text-sm text-gray-400">Date & time</span>
@@ -190,9 +165,7 @@ export const TollPage = () => {
 
           {/* Passages list */}
           <section className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-            <h2 className="text-xl font-semibold text-white mb-4">
-              Your toll passages
-            </h2>
+            <SectionTitle>Your toll passages</SectionTitle>
             {passagesQuery.isLoading && (
               <p className="text-gray-400">Loading…</p>
             )}
@@ -241,9 +214,7 @@ export const TollPage = () => {
 
           {/* How it works */}
           <section className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-            <h2 className="text-xl font-semibold text-white mb-4">
-              How the toll system works
-            </h2>
+            <SectionTitle>How the toll system works</SectionTitle>
             {rulesQuery.isLoading && (
               <p className="text-gray-400">Loading rules…</p>
             )}
@@ -273,6 +244,5 @@ export const TollPage = () => {
           </section>
         </div>
       </div>
-    </div>
   )
 }
