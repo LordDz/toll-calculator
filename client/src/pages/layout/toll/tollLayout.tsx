@@ -3,7 +3,7 @@ import { Outlet } from "@tanstack/react-router"
 
 export const TollLayout = () => (
   <>
-    <ReactQueryDevtools buttonPosition="top-right" />
+    <ReactQueryDevtools buttonPosition="bottom-right" />
     <div className="animate-fade-in">
 
     <Outlet />

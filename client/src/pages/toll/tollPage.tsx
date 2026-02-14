@@ -8,7 +8,7 @@ export const TollPage = () => {
   return (
     <div>
       <TxtParagraph className="text-text-secondary mb-8">
-        Check fees, view passages, and add entries. Mock backend for demo.
+        Check fees, view passages, and add entries. Uses a mocked API based off tanstack query.
       </TxtParagraph>
 
       <div className="grid gap-6">
