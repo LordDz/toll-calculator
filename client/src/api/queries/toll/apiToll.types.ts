@@ -55,10 +55,13 @@ export interface AddPassageRequest {
 /** Response after adding a passage. */
 export interface AddPassageResponse {
   passage: TollPassage
+  /** Effective day total: at most once per hour (max fee), cap 60 SEK. */
+  dayTotalSek: number
 }
 
 export interface ApiToll {
   getPassages: QueryGet<TollPassage[]>
+  getSekToday: QueryGetByData<string, number>
   getFeeCheck: QueryGetByData<FeeCheckParams, FeeCheckResult>
   getFeeRules: QueryGet<FeeRulesSummary>
   postPassage: MutationPostData<AddPassageRequest, AddPassageResponse>

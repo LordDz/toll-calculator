@@ -1,8 +1,10 @@
 import { getQueryKey } from '@/api/queries/util/queryKey'
+import { queryClient } from '@/api/queryClient/queryClient'
 import { appendToQueryOnSuccess } from '@/api/utils/mutation/success'
 import { TOLL_QUERY_KEYS } from './apiToll.constants'
 import type { ApiToll, TollPassage } from './apiToll.types'
 import {
+  computeEffectiveFeeForDay,
   mockAddPassage,
   mockGetFeeForDateTime,
   mockGetFeeRules,
@@ -20,6 +22,15 @@ export const apiToll: ApiToll = {
     }),
   },
 
+  getSekToday: {
+    queryKey: TOLL_QUERY_KEYS.SEK_TODAY,
+    getByData: (data, enabled = true, refetchOnMount = false) => ({
+      queryKey: getQueryKey(TOLL_QUERY_KEYS.SEK_TODAY, data),
+      queryFn: async () =>  computeEffectiveFeeForDay(await mockGetPassages(), new Date(data)),
+      enabled,
+      refetchOnMount,
+    }),
+  },
   getFeeCheck: {
     queryKey: TOLL_QUERY_KEYS.FEE_CHECK,
     getByData: (data, enabled = true, refetchOnMount = false) => ({
@@ -45,9 +56,9 @@ export const apiToll: ApiToll = {
     mutationKey: TOLL_QUERY_KEYS.POST_PASSAGE,
     post: () => ({
       mutationFn: (data) =>
-        mockAddPassage(data.timestamp, data.vehicleType).then((passage) => ({
-          passage,
-        })),
+        mockAddPassage(data.timestamp, data.vehicleType).then(
+          ({ passage, dayTotalSek }) => ({ passage, dayTotalSek }),
+        ),
       onSuccess: (data) => {
         appendToQueryOnSuccess(
           getQueryKey(TOLL_QUERY_KEYS.PASSAGES),
@@ -55,6 +66,9 @@ export const apiToll: ApiToll = {
           (a: TollPassage, b: TollPassage) =>
             new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
         )
+        queryClient.invalidateQueries({
+          queryKey: getQueryKey(TOLL_QUERY_KEYS.PASSAGES),
+        })
       },
     }),
   },

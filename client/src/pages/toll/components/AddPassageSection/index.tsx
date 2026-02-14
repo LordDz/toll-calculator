@@ -1,5 +1,7 @@
-import type { VehicleType } from '@/api/queries/toll'
+import type { AddPassageRequest, AddPassageResponse, VehicleType } from '@/api/queries/toll'
 import { apiToll } from '@/api/queries/toll'
+import { getQueryKey } from '@/api/queries/util/queryKey'
+import { queryClient } from '@/api/queryClient/queryClient'
 import { TxtSectionTitle } from '@/components/text/Header'
 import { toDatetimeLocal } from '@/utils/date/toDateTimeLocal'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -12,15 +14,25 @@ export const AddPassageSection = () => {
   const [selectedTime, setSelectedTime] = useState(() =>
     toDatetimeLocal(new Date().toISOString()),
   )
+  // const passagesQuery = useQuery(apiToll.getPassages.get())
+  const qSekToday = useQuery(apiToll.getSekToday.getByData(selectedTime))
+
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleType>('Car')
 
   const addPassageMutation = useMutation(
     apiToll.postPassage.post(),
   )
 
+  const onSuccess = (successData: AddPassageResponse, variables: AddPassageRequest) => {
+    console.log('!!!!!onSuccess mutation', successData, variables)
+    queryClient.invalidateQueries({ queryKey: getQueryKey(apiToll.getSekToday.queryKey) })
+  }
+
+
+
   const handleAddPassage = () => {
     const timestamp = new Date(selectedTime).toISOString()
-    addPassageMutation.mutate({ timestamp, vehicleType: selectedVehicle })
+    addPassageMutation.mutate({ timestamp, vehicleType: selectedVehicle }, { onSuccess })
   }
 
   const handleAddDate = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,6 +56,14 @@ const feeCheckQuery = useQuery({
   ),
 })
 
+  // const dayTotalSek =
+  //   passagesQuery.data?.length != null && passagesQuery.data.length > 0
+  //     ? computeEffectiveFeeForDay(passagesQuery.data, new Date())
+  //     : null;
+
+      // console.log('dayTotalSek', dayTotalSek)
+      // console.log('passagesQuery.data', passagesQuery.data)
+
   return (
     <section className="bg-toll-section rounded-xl p-6">
       <TxtSectionTitle>Add toll passage</TxtSectionTitle>
@@ -55,6 +75,11 @@ const feeCheckQuery = useQuery({
         onAddPassage={handleAddPassage}
         isPending={addPassageMutation.isPending}
       />
+      {qSekToday.data != undefined && (
+        <p className="mt-2 text-sm text-text-secondary">
+          Day total (once/hour, max 60 SEK): <span className="font-medium text-text-primary">{qSekToday.data} SEK</span>
+        </p>
+      )}
 
       {/* {feeCheckParams && (
         <QueryWrapper query={feeCheckQuery} messageClassName="text-text-secondary">
