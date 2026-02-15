@@ -12,8 +12,11 @@ const config = defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+      // ESM shim so Vitest doesn't load CJS tiny-warning (used by @tanstack/react-router)
+      'tiny-warning': fileURLToPath(new URL('./src/test/tiny-warning-shim.ts', import.meta.url)),
     },
   },
+  test: {},
   plugins: [
     devtools(),
     cloudflare({ viteEnvironment: { name: 'ssr' } }),
