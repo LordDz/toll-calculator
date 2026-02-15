@@ -77,9 +77,7 @@ export const AddPassageSection = () => {
         onAddPassage={handleAddPassage}
         isPending={addPassageMutation.isPending}
       />
-     
       <PassagesListSection />
- 
     </section>
   )
 }

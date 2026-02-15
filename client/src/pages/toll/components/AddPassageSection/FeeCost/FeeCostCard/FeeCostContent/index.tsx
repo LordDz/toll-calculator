@@ -14,7 +14,6 @@ export const FeeCostContent = ({ data }: FeeCostContentProps) => {
   const [isVisible, setIsVisible] = useState(true)
 
   useEffect(() => {
-
     if (skipUpdate(data, displayData)) return;
 
     setIsVisible(false)
