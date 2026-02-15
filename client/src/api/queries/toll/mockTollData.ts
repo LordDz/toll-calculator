@@ -249,3 +249,9 @@ export function mockGetFeeRules(): Promise<FeeRulesSummary> {
     chargeOncePerHour: true,
   })
 }
+
+/** Reset in-memory passages and id counter. Only for tests. */
+export function __resetMockTollForTesting(): void {
+  mockPassages = []
+  nextId = 3
+}
