@@ -88,38 +88,32 @@ export function isHoliday(date: Date): boolean {
   return false
 }
 
+/** Minutes from midnight for readable schedule (e.g. M(6,0) = 06:00). */
+const M = (h: number, min: number) => h * 60 + min
+
 /**
- * Fee schedule: (hour, minute range start, minute range end, fee SEK).
- * Minutes are inclusive. Only chargeable hours are listed; all other times return 0.
+ * Fee schedule as time ranges (minutes from midnight, inclusive). Only chargeable
+ * times are listed; all other times (e.g. 18:30–05:59) return 0.
+ * Low=8, Standard=13, Rush=18 SEK.
  */
-const FEE_SCHEDULE: ReadonlyArray<{ hour: number; minStart: number; minEnd: number; feeSek: number }> = [
-  { hour: 6, minStart: 0, minEnd: 29, feeSek: 8 },
-  { hour: 6, minStart: 30, minEnd: 59, feeSek: 13 },
-  { hour: 7, minStart: 0, minEnd: 59, feeSek: 18 },
-  { hour: 8, minStart: 0, minEnd: 29, feeSek: 13 },
-  { hour: 8, minStart: 30, minEnd: 59, feeSek: 8 },
-  { hour: 9, minStart: 30, minEnd: 59, feeSek: 8 },
-  { hour: 10, minStart: 30, minEnd: 59, feeSek: 8 },
-  { hour: 11, minStart: 30, minEnd: 59, feeSek: 8 },
-  { hour: 12, minStart: 30, minEnd: 59, feeSek: 8 },
-  { hour: 13, minStart: 30, minEnd: 59, feeSek: 8 },
-  { hour: 14, minStart: 30, minEnd: 59, feeSek: 8 },
-  { hour: 15, minStart: 0, minEnd: 29, feeSek: 13 },
-  { hour: 15, minStart: 30, minEnd: 59, feeSek: 18 },
-  { hour: 16, minStart: 0, minEnd: 59, feeSek: 18 },
-  { hour: 17, minStart: 0, minEnd: 59, feeSek: 13 },
-  { hour: 18, minStart: 0, minEnd: 29, feeSek: 8 },
+const FEE_SCHEDULE: ReadonlyArray<{ startMinOfDay: number; endMinOfDay: number; feeSek: number }> = [
+  { startMinOfDay: M(6, 0), endMinOfDay: M(6, 29), feeSek: 8 },   // 06:00–06:29 Low
+  { startMinOfDay: M(6, 30), endMinOfDay: M(6, 59), feeSek: 13 },  // 06:30–06:59 Standard
+  { startMinOfDay: M(7, 0), endMinOfDay: M(7, 59), feeSek: 18 },   // 07:00–07:59 Rush
+  { startMinOfDay: M(8, 0), endMinOfDay: M(8, 29), feeSek: 13 },   // 08:00–08:29 Standard
+  { startMinOfDay: M(8, 30), endMinOfDay: M(14, 59), feeSek: 8 }, // 08:30–14:59 Low
+  { startMinOfDay: M(15, 0), endMinOfDay: M(15, 29), feeSek: 13 }, // 15:00–15:29 Standard
+  { startMinOfDay: M(15, 30), endMinOfDay: M(16, 59), feeSek: 18 }, // 15:30–16:59 Rush
+  { startMinOfDay: M(17, 0), endMinOfDay: M(17, 59), feeSek: 13 }, // 17:00–17:59 Standard
+  { startMinOfDay: M(18, 0), endMinOfDay: M(18, 29), feeSek: 8 },  // 18:00–18:29 Low
 ]
 
 /** Returns the toll fee (SEK) for the given date/time, or 0 if outside chargeable hours. */
 function getHourFeeSek(date: Date): number {
-  const hour = date.getHours()
-  const minute = date.getMinutes()
-
+  const minOfDay = date.getHours() * 60 + date.getMinutes()
   const match = FEE_SCHEDULE.find(
-    (slot) => slot.hour === hour && minute >= slot.minStart && minute <= slot.minEnd,
-  );
-
+    (slot) => minOfDay >= slot.startMinOfDay && minOfDay <= slot.endMinOfDay,
+  )
   return match?.feeSek ?? 0
 }
 

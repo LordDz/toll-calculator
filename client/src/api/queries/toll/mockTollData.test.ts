@@ -138,11 +138,22 @@ describe('mockGetFeeForDateTime', () => {
   })
 
   it('returns correct fees for different time slots', () => {
-    expect(mockGetFeeForDateTime('2025-02-12T06:00:00', 'Car').feeSek).toBe(8)
-    expect(mockGetFeeForDateTime('2025-02-12T06:30:00', 'Car').feeSek).toBe(13)
+    // Low (8), Standard (13), Rush (18)
+    expect(mockGetFeeForDateTime('2025-02-12T06:00:00', 'Car').feeSek).toBe(8)   // 06:00–06:29 Low
+    expect(mockGetFeeForDateTime('2025-02-12T06:30:00', 'Car').feeSek).toBe(13)  // 06:30–06:59 Standard
+    expect(mockGetFeeForDateTime('2025-02-12T07:00:00', 'Car').feeSek).toBe(18)  // 07:00–07:59 Rush
     expect(mockGetFeeForDateTime('2025-02-12T07:30:00', 'Car').feeSek).toBe(18)
-    expect(mockGetFeeForDateTime('2025-02-12T08:00:00', 'Car').feeSek).toBe(13)
-    expect(mockGetFeeForDateTime('2025-02-12T18:00:00', 'Car').feeSek).toBe(8)
+    expect(mockGetFeeForDateTime('2025-02-12T08:00:00', 'Car').feeSek).toBe(13)  // 08:00–08:29 Standard
+    expect(mockGetFeeForDateTime('2025-02-12T08:29:00', 'Car').feeSek).toBe(13)
+    expect(mockGetFeeForDateTime('2025-02-12T08:30:00', 'Car').feeSek).toBe(8)  // 08:30–14:59 Low
+    expect(mockGetFeeForDateTime('2025-02-12T10:00:00', 'Car').feeSek).toBe(8)
+    expect(mockGetFeeForDateTime('2025-02-12T14:59:00', 'Car').feeSek).toBe(8)
+    expect(mockGetFeeForDateTime('2025-02-12T15:00:00', 'Car').feeSek).toBe(13)  // 15:00–15:29 Standard
+    expect(mockGetFeeForDateTime('2025-02-12T15:30:00', 'Car').feeSek).toBe(18) // 15:30–16:59 Rush
+    expect(mockGetFeeForDateTime('2025-02-12T16:59:00', 'Car').feeSek).toBe(18)
+    expect(mockGetFeeForDateTime('2025-02-12T17:00:00', 'Car').feeSek).toBe(13) // 17:00–17:59 Standard
+    expect(mockGetFeeForDateTime('2025-02-12T18:00:00', 'Car').feeSek).toBe(8)  // 18:00–18:29 Low
+    expect(mockGetFeeForDateTime('2025-02-12T18:29:00', 'Car').feeSek).toBe(8)
   })
 })
 
