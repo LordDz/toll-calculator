@@ -1,5 +1,6 @@
 export { apiToll } from './apiToll'
 export { TOLL_QUERY_KEYS } from './apiToll.constants'
+export { getEffectiveFeeCheckForDisplay } from './apiToll.utils'
 export {
   computeEffectiveFeeForDay,
   mockGetPassages,

@@ -1,5 +1,5 @@
 import type { VehicleType } from '@/api/queries/toll'
-import { apiToll } from '@/api/queries/toll'
+import { apiToll, getEffectiveFeeCheckForDisplay } from '@/api/queries/toll'
 import { isHoliday } from '@/api/queries/toll/mockTollData'
 import { TxtSectionTitle } from '@/components/text/MenuHeader'
 import { toDatetimeLocal } from '@/utils/date/toDateTimeLocal'
@@ -14,7 +14,7 @@ export const AddPassageSection = () => {
   const [selectedTime, setSelectedTime] = useState(() =>
     toDatetimeLocal(new Date().toISOString()),
   )
-  // const passagesQuery = useQuery(apiToll.getPassages.get())
+  const passagesQuery = useQuery(apiToll.getPassages.get())
   const qSekToday = useQuery(apiToll.getSekToday.getByData(selectedTime))
 
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleType>('Car')
@@ -47,12 +47,19 @@ export const AddPassageSection = () => {
       }
     : null;
     
-const feeCheckQuery = useQuery({
-  ...apiToll.getFeeCheck.getByData(
-    feeCheckParams ?? { dateTime: '', vehicleType: 'Car' },
-    !!feeCheckParams,
-  ),
-})
+  const feeCheckQuery = useQuery({
+    ...apiToll.getFeeCheck.getByData(
+      feeCheckParams ?? { dateTime: '', vehicleType: 'Car' },
+      !!feeCheckParams,
+    ),
+  })
+
+  const effectiveFeeData = getEffectiveFeeCheckForDisplay(
+    feeCheckQuery.data,
+    passagesQuery.data ?? [],
+    feeCheckParams?.dateTime ?? '',
+    feeCheckParams?.vehicleType ?? 'Car',
+  )
 
   return (
     <section className="bg-toll-section rounded-xl p-6">
@@ -70,7 +77,7 @@ const feeCheckQuery = useQuery({
           Day total (once/hour, max 60 SEK): <span className="font-medium text-text-primary">{qSekToday.data} SEK</span>
         </p>
       )}
-      <FeeCost data={feeCheckQuery.data} />
+      <FeeCost data={effectiveFeeData} />
       <PassagesListSection />
  
     </section>

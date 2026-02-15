@@ -174,9 +174,12 @@ export function mockGetFeeForDateTime(
   return { feeSek, isFree: false }
 }
 
-/** Mock: fetch all passages. */
+/** Mock: fetch all passages (sorted by date, oldest first). */
 export function mockGetPassages(): Promise<TollPassage[]> {
-  return Promise.resolve([...mockPassages])
+  const sorted = [...mockPassages].sort(
+    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+  )
+  return Promise.resolve(sorted)
 }
 
 const getApiPassages = () => {
