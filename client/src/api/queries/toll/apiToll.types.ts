@@ -27,6 +27,8 @@ export interface TollPassage {
 export interface FeeCheckParams {
   dateTime: string // ISO date-time
   vehicleType: VehicleType
+  /** If false, reason text uses 12-hour format (e.g. 6:00 AM); default true = 24-hour (06:00). */
+  use24Hour?: boolean
 }
 
 /** Result of fee check: amount and whether it's free. */

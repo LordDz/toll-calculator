@@ -159,6 +159,7 @@ export function computeEffectiveFeeForDay(
 export function mockGetFeeForDateTime(
   dateTime: string,
   vehicleType: VehicleType,
+  use24Hour: boolean = true,
 ): FeeCheckResult {
   const date = new Date(dateTime)
   if (FEE_FREE_VEHICLES.includes(vehicleType)) {
@@ -171,7 +172,28 @@ export function mockGetFeeForDateTime(
     return { feeSek: 0, isFree: true, reason: 'Holiday' }
   }
   const feeSek = getHourFeeSek(date)
-  return { feeSek, isFree: false }
+  return { feeSek, isFree: feeSek === 0, reason: getReasonIfNotWithinChargeableHours(feeSek, use24Hour) }
+}
+
+/**
+ * Returns the "no charge outside hours" message in 12-hour or 24-hour format.
+ * Use this so the message respects the user's time format preference.
+ */
+export function getChargeableHoursMessage(use24Hour: boolean): string {
+  if (use24Hour) {
+    return 'No charge between 06:00 and 18:30.'
+  }
+  return 'No charge between 6:00 AM and 6:30 PM.'
+}
+
+export function getReasonIfNotWithinChargeableHours(
+  feeCost: number,
+  use24Hour: boolean = true,
+): string | undefined {
+  if (feeCost === 0) {
+    return getChargeableHoursMessage(use24Hour)
+  }
+  return undefined
 }
 
 /** Mock: fetch all passages (sorted by date, oldest first). */

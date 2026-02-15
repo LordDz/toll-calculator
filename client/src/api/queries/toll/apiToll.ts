@@ -33,9 +33,9 @@ export const apiToll: ApiToll = {
   getFeeCheck: {
     queryKey: TOLL_QUERY_KEYS.FEE_CHECK,
     getByData: (data, enabled = true, refetchOnMount = false) => ({
-      queryKey: getQueryKey(TOLL_QUERY_KEYS.FEE_CHECK, data.dateTime, data.vehicleType),
+      queryKey: getQueryKey(TOLL_QUERY_KEYS.FEE_CHECK, data.dateTime, data.vehicleType, data.use24Hour === false ? '12h' : '24h'),
       queryFn: () =>
-        Promise.resolve(mockGetFeeForDateTime(data.dateTime, data.vehicleType)),
+        Promise.resolve(mockGetFeeForDateTime(data.dateTime, data.vehicleType, data.use24Hour ?? true)),
       enabled: enabled && !!data.dateTime && !!data.vehicleType,
       refetchOnMount,
     }),

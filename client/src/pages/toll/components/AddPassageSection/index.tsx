@@ -2,6 +2,7 @@ import type { VehicleType } from '@/api/queries/toll'
 import { apiToll, getEffectiveFeeCheckForDisplay } from '@/api/queries/toll'
 import { isHoliday } from '@/api/queries/toll/mockTollData'
 import { TxtSectionTitle } from '@/components/text/MenuHeader'
+import { isLocale24Hour } from '@/utils/date/isLocale24Hour'
 import { toDatetimeLocal } from '@/utils/date/toDateTimeLocal'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
@@ -44,6 +45,7 @@ export const AddPassageSection = () => {
     ? {
         dateTime: new Date(selectedTime).toISOString(),
         vehicleType: selectedVehicle,
+        use24Hour: isLocale24Hour(),
       }
     : null;
     

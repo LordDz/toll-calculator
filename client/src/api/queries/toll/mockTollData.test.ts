@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   __resetMockTollForTesting,
   computeEffectiveFeeForDay,
+  getChargeableHoursMessage,
+  getReasonIfNotWithinChargeableHours,
   isHoliday,
   mockAddPassage,
   mockGetFeeForDateTime,
@@ -93,6 +95,30 @@ describe('computeEffectiveFeeForDay', () => {
   })
 })
 
+describe('getChargeableHoursMessage', () => {
+  it('returns 24-hour message when use24Hour is true', () => {
+    expect(getChargeableHoursMessage(true)).toBe('No charge between 06:00 and 18:30.')
+  })
+
+  it('returns 12-hour message when use24Hour is false', () => {
+    expect(getChargeableHoursMessage(false)).toBe('No charge between 6:00 AM and 6:30 PM.')
+  })
+})
+
+describe('getReasonIfNotWithinChargeableHours', () => {
+  it('returns undefined when feeCost > 0', () => {
+    expect(getReasonIfNotWithinChargeableHours(8)).toBeUndefined()
+  })
+
+  it('returns 24-hour message by default when feeCost is 0', () => {
+    expect(getReasonIfNotWithinChargeableHours(0)).toBe('No charge between 06:00 and 18:30.')
+  })
+
+  it('returns 12-hour message when use24Hour is false and feeCost is 0', () => {
+    expect(getReasonIfNotWithinChargeableHours(0, false)).toBe('No charge between 6:00 AM and 6:30 PM.')
+  })
+})
+
 describe('mockGetFeeForDateTime', () => {
   it('returns fee for Car on a weekday in chargeable hours', () => {
     // Wednesday 12 Feb 2025, 07:00 – 18 SEK
@@ -130,11 +156,18 @@ describe('mockGetFeeForDateTime', () => {
     // Before 06:00
     const early = mockGetFeeForDateTime('2025-02-12T05:30:00', 'Car')
     expect(early.feeSek).toBe(0)
-    expect(early.isFree).toBe(false)
+    expect(early.isFree).toBe(true)
+    expect(early.reason).toBe('No charge between 06:00 and 18:30.')
     // After 18:30
     const late = mockGetFeeForDateTime('2025-02-12T19:00:00', 'Car')
     expect(late.feeSek).toBe(0)
-    expect(late.isFree).toBe(false)
+    expect(late.isFree).toBe(true)
+    expect(late.reason).toBe('No charge between 06:00 and 18:30.')
+  })
+
+  it('returns reason in 12-hour format when use24Hour is false', () => {
+    const early = mockGetFeeForDateTime('2025-02-12T05:30:00', 'Car', false)
+    expect(early.reason).toBe('No charge between 6:00 AM and 6:30 PM.')
   })
 
   it('returns correct fees for different time slots', () => {
