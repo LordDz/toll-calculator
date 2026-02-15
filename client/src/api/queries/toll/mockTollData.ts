@@ -66,6 +66,8 @@ export function isHoliday(date: Date): boolean {
   if (m === 11 && d === 25) return true // 25 Dec – Christmas Day
   if (m === 11 && d === 26) return true // 26 Dec – St. Stephen's Day (Boxing Day)
 
+  // Traditional days off, such as Christmas Eve, New Year's Eve and Midsummer Eve, 
+  // are not official public holidays by law but are often non-working days through collective agreements.
   // Easter-based (Good Friday, Easter Eve, Easter Sunday, Easter Monday, Ascension Day)
   const easter = getEasterSunday(y)
   const goodFriday = new Date(easter)
