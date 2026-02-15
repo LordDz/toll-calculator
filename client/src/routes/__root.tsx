@@ -2,6 +2,7 @@ import { createRootRouteWithContext } from '@tanstack/react-router'
 
 import { RootLayout } from '@/pages/layout/root/rootLayout'
 import type { QueryClient } from '@tanstack/react-query'
+import { NotFound } from '@/components/NotFound'
 import { RootDocument } from '../components/RootDocument'
 import appCss from '../styles.css?url'
 
@@ -33,4 +34,5 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
   shellComponent: RootDocument,
   component: RootLayout,
+  notFoundComponent: NotFound,
 })
