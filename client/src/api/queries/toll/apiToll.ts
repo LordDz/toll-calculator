@@ -1,5 +1,5 @@
 import { getQueryKey } from '@/api/queries/util/queryKey'
-import { TOLL_QUERY_KEYS } from './apiToll.constants'
+import { TOLL_MUTATION_KEYS, TOLL_QUERY_KEYS, TOLL_QUERY_PASS_KEYS } from './apiToll.constants'
 import type { ApiToll } from './apiToll.types'
 import { getDayKey, onPostPassageSuccess } from './apiToll.utils'
 import {
@@ -12,9 +12,9 @@ import {
 
 export const apiToll: ApiToll = {
   getPassages: {
-    queryKey: TOLL_QUERY_KEYS.PASSAGES,
+    queryKey: TOLL_QUERY_PASS_KEYS.PASSAGES,
     get: (enabled = true, refetchOnMount = false) => ({
-      queryKey: getQueryKey(TOLL_QUERY_KEYS.PASSAGES),
+      queryKey: getQueryKey(TOLL_QUERY_PASS_KEYS.PASSAGES),
       queryFn: () => mockGetPassages(),
       enabled,
       refetchOnMount,
@@ -22,9 +22,9 @@ export const apiToll: ApiToll = {
   },
 
   getSekToday: {
-    queryKey: TOLL_QUERY_KEYS.SEK_TODAY,
+    queryKey: TOLL_QUERY_PASS_KEYS.SEK_TODAY,
     getByData: (data, enabled = true, refetchOnMount = false) => ({
-      queryKey: getQueryKey(TOLL_QUERY_KEYS.SEK_TODAY, getDayKey(data)),
+      queryKey: getQueryKey(TOLL_QUERY_PASS_KEYS.SEK_TODAY, getDayKey(data)),
       queryFn: async () => computeEffectiveFeeForDay(await mockGetPassages(), new Date(data)),
       enabled,
       refetchOnMount,
@@ -52,7 +52,7 @@ export const apiToll: ApiToll = {
   },
 
   postPassage: {
-    mutationKey: TOLL_QUERY_KEYS.POST_PASSAGE,
+    mutationKey: TOLL_MUTATION_KEYS.POST_PASSAGE,
     post: () => ({
       mutationFn: (data) =>
         mockAddPassage(data.timestamp, data.vehicleType).then(

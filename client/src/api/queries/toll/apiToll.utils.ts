@@ -1,7 +1,6 @@
 import { queryClient } from '@/api/queryClient/queryClient'
-import { appendToQueryOnSuccess } from '@/api/utils/mutation/success'
 import { getQueryKey } from '../util/queryKey'
-import { TOLL_QUERY_KEYS } from './apiToll.constants'
+import { TOLL_QUERY_PASS_KEYS } from './apiToll.constants'
 import type {
   AddPassageRequest,
   AddPassageResponse,
@@ -55,23 +54,15 @@ export function getEffectiveFeeCheckForDisplay(
   return feeCheckResult
 }
 
-const passageSortByTimestamp = (a: TollPassage, b: TollPassage) =>
-  new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-
-/** Called when postPassage mutation succeeds; updates cache and invalidates related queries. */
+/** Called when postPassage mutation succeeds; invalidates related queries. */
 export function onPostPassageSuccess(
-  data: AddPassageResponse,
+  _data: AddPassageResponse,
   variables: AddPassageRequest,
 ): void {
-  appendToQueryOnSuccess(
-    getQueryKey(TOLL_QUERY_KEYS.PASSAGES),
-    data.passage,
-    passageSortByTimestamp,
-  )
   queryClient.invalidateQueries({
-    queryKey: getQueryKey(TOLL_QUERY_KEYS.PASSAGES),
+    queryKey: getQueryKey(TOLL_QUERY_PASS_KEYS.PASSAGES),
   })
   queryClient.invalidateQueries({
-    queryKey: getQueryKey(TOLL_QUERY_KEYS.SEK_TODAY, getDayKey(variables.timestamp)),
+    queryKey: getQueryKey(TOLL_QUERY_PASS_KEYS.SEK_TODAY, getDayKey(variables.timestamp)),
   })
 }
