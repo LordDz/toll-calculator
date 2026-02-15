@@ -8,6 +8,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { PassagesListSection } from '../PassagesListSection'
+import { DayTotal } from './DayTotal'
 import { FeeCost } from './FeeCost'
 import { PassageForm } from './PassageForm'
 
@@ -66,6 +67,8 @@ export const AddPassageSection = () => {
   return (
     <section className="bg-toll-section rounded-xl p-6">
       <TxtSectionTitle>Add toll passage</TxtSectionTitle>
+      <FeeCost data={effectiveFeeData} />
+      <DayTotal sekToday={qSekToday.data} />
       <PassageForm
         selectedTime={selectedTime}
         selectedVehicle={selectedVehicle}
@@ -74,12 +77,7 @@ export const AddPassageSection = () => {
         onAddPassage={handleAddPassage}
         isPending={addPassageMutation.isPending}
       />
-      {qSekToday.data != undefined && (
-        <p className="mt-2 text-sm text-text-secondary">
-          Day total (once/hour, max 60 SEK): <span className="font-medium text-text-primary">{qSekToday.data} SEK</span>
-        </p>
-      )}
-      <FeeCost data={effectiveFeeData} />
+     
       <PassagesListSection />
  
     </section>
