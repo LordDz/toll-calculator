@@ -1,7 +1,7 @@
 import { getQueryKey } from '@/api/queries/util/queryKey'
 import { TOLL_QUERY_KEYS } from './apiToll.constants'
 import type { ApiToll } from './apiToll.types'
-import { onPostPassageSuccess } from './apiToll.utils'
+import { getDayKey, onPostPassageSuccess } from './apiToll.utils'
 import {
   computeEffectiveFeeForDay,
   mockAddPassage,
@@ -24,8 +24,8 @@ export const apiToll: ApiToll = {
   getSekToday: {
     queryKey: TOLL_QUERY_KEYS.SEK_TODAY,
     getByData: (data, enabled = true, refetchOnMount = false) => ({
-      queryKey: getQueryKey(TOLL_QUERY_KEYS.SEK_TODAY, data),
-      queryFn: async () =>  computeEffectiveFeeForDay(await mockGetPassages(), new Date(data)),
+      queryKey: getQueryKey(TOLL_QUERY_KEYS.SEK_TODAY, getDayKey(data)),
+      queryFn: async () => computeEffectiveFeeForDay(await mockGetPassages(), new Date(data)),
       enabled,
       refetchOnMount,
     }),
